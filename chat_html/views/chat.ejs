@@ -1,0 +1,48 @@
+<!-- Vincula el archivo de estilos CSS para estilizar la página -->
+<link rel="stylesheet" href="../stylesheets/style.css">
+
+<!-- Importa la biblioteca de Socket.IO necesaria para la comunicación en tiempo real -->
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io();
+    let user = prompt("¿Cómo te llamas?", "")
+    document.addEventListener("DOMContentLoaded", ()=>{
+        socket.emit('chat message',  (user +" se ha conectado"));
+        document.getElementById("username").textContent=user;
+    })
+</script>
+
+<h1><b>Bienvenido a WhatsApp 2 GOLD <span id="username"></span></b></h1>
+
+<!-- Estructura del HTML para mostrar mensajes y enviar nuevos -->
+<ul id="messages"></ul> <!-- Lista desordenada para mostrar los mensajes recibidos -->
+<form id="form"> <!-- Formulario para enviar nuevos mensajes -->
+    <input id="input" autocomplete="aaas" ="Escribe aquí" /> <!-- Campo de entrada para escribir un nuevo mensaje -->
+    <input type="submit"><!-- Botón para enviar el mensaje -->
+</form>
+<script>
+    // Se establece la conexión con el servidor usando Socket.IO
+    
+    // Obtiene referencias a los elementos del DOM necesarios
+    var messages = document.getElementById('messages'); // La lista donde se mostrarán los mensajes
+    var form = document.getElementById('form'); // El formulario para enviar mensajes
+    var input = document.getElementById('input'); // El campo de entrada para escribir mensajes
+  
+    // Añade un escuchador de evento 'submit' al formulario
+    form.addEventListener('submit', function(e) {
+      e.preventDefault(); // Previene el comportamiento predeterminado del formulario, evitando que la página se actualice
+      if (input.value) { // Verifica si el campo de entrada no está vacío
+        socket.emit('chat message',  (user +": " +input.value)); // Emite el mensaje escrito al servidor
+        input.value = ''; // Limpia el campo de entrada después de enviar el mensaje
+      }
+    });
+  
+    // Escucha el evento 'chat message' desde el servidor
+    socket.on('chat message', function(msg) {
+      console.log("chat messgae")
+      var item = document.createElement('li'); // Crea un nuevo elemento <li> para cada mensaje
+      item.textContent = msg; // Establece el texto del mensaje como contenido del elemento <li>
+      messages.appendChild(item); // Añade el elemento <li> a la lista de mensajes
+      window.scrollTo(0, document.body.scrollHeight); // Desplaza la ventana al final de la lista para mostrar el último mensaje
+    });
+</script>
